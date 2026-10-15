@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a small embedded temperature-control system using an Arduino Uno. The system measures ambient temperature with a TMP36 sensor and reacts using a DC motor, two LEDs, and a piezo buzzer.
+This project implements a small embedded temperature-control system using an Arduino Uno R3. The system measures ambient temperature with a TMP36 sensor and reacts using a DC motor, two LEDs, and a piezo buzzer.
 
 The project is designed around an **asynchronous, event-driven architecture**. A hardware timer schedules periodic work, an external interrupt handles the push button, and the main loop processes events through a state machine. Long blocking delays are avoided in the final application.
 
@@ -151,4 +151,4 @@ Before writing, the program compares the new settings with the stored settings. 
 
 ## Notes
 
-The project was developed and tested using **Tinkercad Circuits with an Arduino Uno**. When building the circuit physically, motor current and power-supply limits must be checked for the selected motor and transistor.
+The project was developed and tested using **Tinkercad Circuits with an Arduino Uno R3**. When building the circuit physically, motor current and power-supply limits must be checked for the selected motor and transistor.
