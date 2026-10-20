@@ -8,28 +8,15 @@ const byte RED_LED    = 8;
 const byte GREEN_LED  = 9;
 const byte BUZZER_PIN = 10;
 
-
 // SYSTEM STATES:
-enum SystemState {
-  NORMAL,
-  COOLING_LOW,
-  COOLING_HIGH,
-  CRITICAL
-};
-
+enum SystemState { NORMAL, COOLING_LOW, COOLING_HIGH, CRITICAL };
 SystemState currentState = NORMAL;
 
 // EEPROM SETTINGS:
 const uint16_t EEPROM_MAGIC = 0xCAFE;
 const byte EEPROM_VERSION = 1;
 
-struct Settings {
-  uint16_t magic;
-  byte version;
-  byte coolingThreshold;
-  bool alarmEnabled;
-};
-
+struct Settings { uint16_t magic; byte version; byte coolingThreshold; bool alarmEnabled; };
 Settings settings;
 
 // Default values used when EEPROM is invalid:
@@ -41,7 +28,6 @@ const bool DEFAULT_ALARM_ENABLED = true;
 volatile bool sampleFlag = false;
 volatile bool buttonFlag = false;
 volatile bool outputTickFlag = false;
-
 volatile byte timerTicks = 0; // Timer counter, Timer1 interrupt occurs every 100 ms.
 
 // SYSTEM VARIABLES:
@@ -90,7 +76,6 @@ void setupTimer1() {
   */
 
   OCR1A = 24999;
-  
   // CTC mode:
   TCCR1B |= (1 << WGM12);
   // Prescaler = 64:
@@ -109,7 +94,6 @@ void loadSettings() {
       settings.version != EEPROM_VERSION ||
       settings.coolingThreshold < 25 ||
       settings.coolingThreshold > 35) {
-
     Serial.println("EEPROM invalid - loading defaults.");
     settings.magic = EEPROM_MAGIC;
     settings.version = EEPROM_VERSION;
@@ -142,7 +126,6 @@ void saveSettingsIfChanged() {
       storedSettings.version != settings.version ||
       storedSettings.coolingThreshold != settings.coolingThreshold ||
       storedSettings.alarmEnabled != settings.alarmEnabled) {
-
     EEPROM.put(0, settings);
     Serial.println("Settings saved to EEPROM.");
   }
@@ -239,7 +222,6 @@ void updateOutputs() {
       digitalWrite(GREEN_LED, HIGH);
       digitalWrite(RED_LED, LOW);
       noTone(BUZZER_PIN);
-      
       redLedState = false;
       buzzerState = false;
       break;
@@ -248,7 +230,6 @@ void updateOutputs() {
       digitalWrite(GREEN_LED, HIGH);
       digitalWrite(RED_LED, LOW);
       noTone(BUZZER_PIN);
-      
       redLedState = false;
       buzzerState = false;
       break;
@@ -260,7 +241,6 @@ void updateOutputs() {
       
       digitalWrite(RED_LED, redLedState ? HIGH : LOW);
       noTone(BUZZER_PIN);
-      
       buzzerState = false;
       break;
 
@@ -294,7 +274,6 @@ void handleButton() {
   unsigned long now = millis();
 
   if (now - lastButtonTime < 250) return;
-
   lastButtonTime = now;
 
   // Cycle cooling threshold: 30 -> 32 -> 34 -> 30
@@ -321,13 +300,13 @@ void handleButton() {
 
 void setup() {
   Serial.begin(9600);
-
+  
   pinMode(GREEN_LED, OUTPUT);
   pinMode(RED_LED, OUTPUT);
   pinMode(MOTOR_PIN, OUTPUT);
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT_PULLUP);
-
+  
   // Safe initial outputs:
   digitalWrite(GREEN_LED, LOW);
   digitalWrite(RED_LED, LOW);
@@ -336,14 +315,9 @@ void setup() {
 
   // EEPROM:
   loadSettings();
-
+  
   // External interrupt:
-  attachInterrupt(
-    digitalPinToInterrupt(BUTTON_PIN),
-    buttonISR,
-    FALLING
-  );
-
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), buttonISR, FALLING);
   setupTimer1(); // Hardware Timer1
   
   Serial.println();
@@ -369,7 +343,6 @@ void loop() {
     noInterrupts();
     sampleFlag = false;
     interrupts();
-
     readTemperature();
     updateState();
     updateMotor();
